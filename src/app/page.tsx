@@ -8,7 +8,7 @@ import { createWalletAdapter } from "thirdweb/wallets";
 import { useAccount, useConnect, useDisconnect, useSwitchChain, useWalletClient } from "wagmi";
 
 const client = createThirdwebClient({
-	clientId: "3514d1019082c2ea71ed1e367fd20af0", //"your-client-id",
+	clientId: "your-client-id",
 });
 
 function App() {
