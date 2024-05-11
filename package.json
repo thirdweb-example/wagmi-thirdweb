@@ -13,7 +13,7 @@
     "next": "13.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "thirdweb": "0.0.0-dev-f95024147f012f9b752b6cd2215199dca870c39d-20240511003159",
+    "thirdweb": "^5.19.0",
     "viem": "latest",
     "wagmi": "latest"
   },
