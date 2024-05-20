@@ -133,13 +133,25 @@ function App() {
 
 			{wagmiAccount.isConnected ? (
 				<div style={{ width: 500 }}>
-					<h2>{`<ConnectButton> component`}</h2>
+					<h2>
+						<a href="https://portal.thirdweb.com/typescript/v5/react/components/ConnectButton">{`<ConnectButton />`}</a>{" "}
+						component
+					</h2>
 					<ConnectButton client={client} />
-					<h2>{`<PayEmbed> component`}</h2>
+					<h2>
+						<a href="https://portal.thirdweb.com/connect/pay/get-started#option-2-embed-pay">{`<PayEmbed />`}</a>{" "}
+						component
+					</h2>
 					<PayEmbed client={client} />
-					<h2>{`<MediaRenderer> component`}</h2>
+					<h2>
+						<a href="https://portal.thirdweb.com/typescript/v5/react/components/MediaRenderer">{`<MediaRenderer />`}</a>{" "}
+						component
+					</h2>
 					{nft && <MediaRenderer client={client} src={nft.metadata.image} />}
-					<h2>{`<TransactionButton> component`}</h2>
+					<h2>
+						<a href="https://portal.thirdweb.com/typescript/v5/react/components/TransactionButton">{`<TransactionButton />`}</a>{" "}
+						component
+					</h2>
 					<TransactionButton
 						transaction={() => {
 							return claimTo({
@@ -161,7 +173,9 @@ function App() {
 				</div>
 			)}
 			<div style={{ padding: "100px 0px" }}>
-				<a href="">View code on Github</a>
+				<a href="https://github.com/thirdweb-example/wagmi-thirdweb">
+					View code on Github
+				</a>
 			</div>
 		</div>
 	);
