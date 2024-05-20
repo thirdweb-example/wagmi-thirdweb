@@ -1,21 +1,42 @@
 "use client";
 
 import { useEffect } from "react";
-import { createThirdwebClient, defineChain } from "thirdweb";
+import { createThirdwebClient, defineChain, getContract } from "thirdweb";
 import { viemAdapter } from "thirdweb/adapters/viem";
-import { useSetActiveWallet, PayEmbed } from "thirdweb/react";
+import {
+	useSetActiveWallet,
+	PayEmbed,
+	ConnectButton,
+	TransactionButton,
+	useActiveWallet,
+	MediaRenderer,
+	useReadContract,
+} from "thirdweb/react";
 import { createWalletAdapter } from "thirdweb/wallets";
-import { useAccount, useConnect, useDisconnect, useSwitchChain, useWalletClient } from "wagmi";
+import { claimTo, getNFT } from "thirdweb/extensions/erc1155";
+import {
+	useAccount,
+	useConnect,
+	useDisconnect,
+	useSwitchChain,
+	useWalletClient,
+} from "wagmi";
+import { baseSepolia } from "thirdweb/chains";
 
 const client = createThirdwebClient({
-	clientId: "your-client-id",
+	clientId: process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID!,
+});
+
+const contract = getContract({
+	address: "0x638263e3eAa3917a53630e61B1fBa685308024fa",
+	chain: baseSepolia,
+	client,
 });
 
 function App() {
-	const account = useAccount();
+	const wagmiAccount = useAccount();
 	const { connectors, connect, status, error } = useConnect();
 	const { disconnectAsync } = useDisconnect();
-
 	// This is how to set a wagmi account in the thirdweb context to use with all the thirdweb components including Pay
 	const { data: walletClient } = useWalletClient();
 	const { switchChainAsync } = useSwitchChain();
@@ -41,28 +62,49 @@ function App() {
 			}
 		};
 		setActive();
-	}, [walletClient]);
+	}, [walletClient, disconnectAsync, switchChainAsync, setActiveWallet]);
+
+	// handle disconnecting from wagmi
+	const thirdwebWallet = useActiveWallet();
+	useEffect(() => {
+		const disconnectIfNeeded = async () => {
+			if (thirdwebWallet && wagmiAccount.status === "disconnected") {
+				await thirdwebWallet.disconnect();
+			}
+		};
+		disconnectIfNeeded();
+	}, [wagmiAccount, thirdwebWallet]);
+
+	const { data: nft } = useReadContract(getNFT, {
+		contract,
+		tokenId: 0n,
+	});
 
 	return (
-		<>
+		<div style={{ padding: "0 20px" }}>
 			<div>
+				<h1>wagmi</h1>
 				<h2>Account</h2>
 
 				<div>
-					status: {account.status}
+					status: {wagmiAccount.status}
 					<br />
-					addresses: {JSON.stringify(account.addresses)}
+					addresses: {JSON.stringify(wagmiAccount.addresses)}
 					<br />
-					chainId: {account.chainId}
+					chainId: {wagmiAccount.chainId}
 				</div>
 
-				{account.status === "connected" && (
-					<button type="button" onClick={async () => { await disconnectAsync() }}>
+				{wagmiAccount.status === "connected" && (
+					<button
+						type="button"
+						onClick={async () => {
+							await disconnectAsync();
+						}}
+					>
 						Disconnect
 					</button>
 				)}
 			</div>
-
 			<div>
 				<h2>Connect</h2>
 				{connectors.map((connector) => (
@@ -78,11 +120,50 @@ function App() {
 				<div>{error?.message}</div>
 			</div>
 
-      <div>
-      <h2>thirdweb Pay</h2>
-       <PayEmbed client={client} />  
-      </div>
-		</>
+			<hr
+				style={{
+					borderColor: "#666",
+					borderWidth: 1,
+					borderStyle: "solid",
+					margin: "30px 0",
+				}}
+			/>
+
+			<h1>thirdweb</h1>
+
+			{wagmiAccount.isConnected ? (
+				<div style={{ width: 500 }}>
+					<h2>{`<ConnectButton> component`}</h2>
+					<ConnectButton client={client} />
+					<h2>{`<PayEmbed> component`}</h2>
+					<PayEmbed client={client} />
+					<h2>{`<MediaRenderer> component`}</h2>
+					{nft && <MediaRenderer client={client} src={nft.metadata.image} />}
+					<h2>{`<TransactionButton> component`}</h2>
+					<TransactionButton
+						transaction={() => {
+							return claimTo({
+								contract,
+								quantity: 1n,
+								to: wagmiAccount.address!,
+								tokenId: 0n,
+							});
+						}}
+						onError={(e) => console.error(e)}
+					>
+						Mint
+					</TransactionButton>
+				</div>
+			) : (
+				<div>
+					Connect with wagmi to share the connected wallet between both
+					libraries!
+				</div>
+			)}
+			<div style={{ padding: "100px 0px" }}>
+				<a href="">View code on Github</a>
+			</div>
+		</div>
 	);
 }
 

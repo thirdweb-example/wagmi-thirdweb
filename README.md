@@ -1,4 +1,4 @@
-# Use thirdweb pay in a WAGMI application
+# Use thirdweb in a WAGMI application
 
 This repo demonstrates how to use thirdweb Pay or any other thirdweb features within an existing WAGMI application.
 
@@ -50,6 +50,6 @@ useEffect(() => {
 
 View the full source code in `page.tsx`.
 
-## 4. Setup `<PayEmbed>`
+## 4. Use thirdweb normally
 
-You can now use <PayEmbed> or any other thirdweb component / hook and it will use the active connected wallet to perform transactions.
+You can now use <PayEmbed>, <TransactionButton> or any other thirdweb component / hook and it will use the active connected wallet to perform transactions.
