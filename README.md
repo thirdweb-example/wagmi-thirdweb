@@ -18,18 +18,15 @@ Once you have a thirdweb compatible wallet, you simply set it as 'active' and al
 
 ```tsx
 // This is how to set a wagmi account in the thirdweb context to use with all the thirdweb components including Pay
-const { data: walletClient } = useWalletClient();
-const { disconnectAsync } = useDisconnect();
-const { switchChainAsync } = useSwitchChain();
-const setActiveWallet = useSetActiveWallet();
+const { data: walletClient } = useWalletClient(); // from wagmi
+const { switchChainAsync } = useSwitchChain(); // from wagmi
+const setActiveWallet = useSetActiveWallet(); // from thirdweb
 useEffect(() => {
     const setActive = async () => {
         if (walletClient) {
-            // adapt the walletClient to a thirdweb account
             const adaptedAccount = viemAdapter.walletClient.fromViem({
                 walletClient: walletClient as any, // accounts for wagmi/viem version mismatches
             });
-            // create the thirdweb wallet with the adapted account
             const w = createWalletAdapter({
                 adaptedAccount,
                 chain: defineChain(await walletClient.getChainId()),
@@ -45,7 +42,7 @@ useEffect(() => {
         }
     };
     setActive();
-}, [walletClient]);
+}, [walletClient, disconnectAsync, switchChainAsync, setActiveWallet]);
 ```
 
 View the full source code in `page.tsx`.
